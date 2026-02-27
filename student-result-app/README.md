@@ -1,4 +1,4 @@
-# Student Result App
+# Student Result Management
 
 A simple and interactive web application to manage and display student results using:
 
