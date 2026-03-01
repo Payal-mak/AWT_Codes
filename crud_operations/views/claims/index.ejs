@@ -1,0 +1,60 @@
+<h1>All Claims</h1>
+
+<div class="action-bar">
+    <a href="/claims/add" class="btn btn-primary">+ File a Claim</a>
+</div>
+
+<% if (claims.length===0) { %>
+    <p class="text-muted">No claims filed yet.</p>
+    <% } else { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item</th>
+                    <th>Claimant</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Filed On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% claims.forEach(claim=> { %>
+                    <tr>
+                        <td>
+                            <%= claim.id %>
+                        </td>
+                        <td><a href="/items/<%= claim.item_id %>" style="color:#000; font-weight:600;">
+                                <%= claim.item_name %>
+                            </a></td>
+                        <td>
+                            <%= claim.claimant_name %>
+                        </td>
+                        <td>
+                            <%= claim.contact_info || '—' %>
+                        </td>
+                        <td><span class="badge badge-<%= claim.claim_status %>">
+                                <%= claim.claim_status %>
+                            </span></td>
+                        <td>
+                            <%= new Date(claim.created_at).toLocaleDateString() %>
+                        </td>
+                        <td>
+                            <a href="/claims/edit/<%= claim.id %>" class="btn btn-secondary btn-sm">Edit</a>
+                            <% if (claim.claim_status==='pending' ) { %>
+                                <form class="inline" method="POST" action="/claims/approve/<%= claim.id %>"
+                                    onsubmit="return confirm('Approve this claim? The item will be marked as resolved.')">
+                                    <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                                </form>
+                                <% } %>
+                                    <form class="inline" method="POST" action="/claims/delete/<%= claim.id %>"
+                                        onsubmit="return confirm('Delete this claim?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+        <% } %>

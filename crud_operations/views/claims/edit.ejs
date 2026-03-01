@@ -1,0 +1,36 @@
+<h1>Edit Claim</h1>
+
+<form method="POST" action="/claims/edit/<%= claim.id %>">
+    <div class="form-group">
+        <label for="item_id">Item *</label>
+        <select id="item_id" name="item_id" required>
+            <% items.forEach(item=> { %>
+                <option value="<%= item.id %>" <%=claim.item_id===item.id ? 'selected' : '' %>>
+                    #<%= item.id %> — <%= item.name %>
+                </option>
+                <% }) %>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="claimant_name">Claimant Name *</label>
+        <input type="text" id="claimant_name" name="claimant_name" required value="<%= claim.claimant_name %>">
+    </div>
+
+    <div class="form-group">
+        <label for="contact_info">Contact Info</label>
+        <input type="text" id="contact_info" name="contact_info" value="<%= claim.contact_info || '' %>">
+    </div>
+
+    <div class="form-group">
+        <label for="claim_status">Claim Status</label>
+        <select id="claim_status" name="claim_status">
+            <option value="pending" <%=claim.claim_status==='pending' ? 'selected' : '' %>>Pending</option>
+            <option value="approved" <%=claim.claim_status==='approved' ? 'selected' : '' %>>Approved</option>
+            <option value="rejected" <%=claim.claim_status==='rejected' ? 'selected' : '' %>>Rejected</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Claim</button>
+    <a href="/claims" class="btn btn-secondary">Cancel</a>
+</form>

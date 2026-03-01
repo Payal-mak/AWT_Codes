@@ -1,0 +1,34 @@
+<h1>Add New Item</h1>
+
+<form method="POST" action="/items/add">
+    <div class="form-group">
+        <label for="name">Item Name *</label>
+        <input type="text" id="name" name="name" required placeholder="e.g. Blue Backpack">
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" placeholder="Describe the item..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="location_found">Location Found</label>
+        <input type="text" id="location_found" name="location_found" placeholder="e.g. Library, Room 201">
+    </div>
+
+    <div class="form-group">
+        <label for="date_found">Date Found</label>
+        <input type="date" id="date_found" name="date_found">
+    </div>
+
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="found">Found</option>
+            <option value="lost">Lost</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Item</button>
+    <a href="/items" class="btn btn-secondary">Cancel</a>
+</form>

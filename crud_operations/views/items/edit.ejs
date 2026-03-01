@@ -1,0 +1,36 @@
+<h1>Edit Item</h1>
+
+<form method="POST" action="/items/edit/<%= item.id %>">
+    <div class="form-group">
+        <label for="name">Item Name *</label>
+        <input type="text" id="name" name="name" required value="<%= item.name %>">
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description"><%= item.description || '' %></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="location_found">Location Found</label>
+        <input type="text" id="location_found" name="location_found" value="<%= item.location_found || '' %>">
+    </div>
+
+    <div class="form-group">
+        <label for="date_found">Date Found</label>
+        <input type="date" id="date_found" name="date_found"
+            value="<%= item.date_found ? new Date(item.date_found).toISOString().split('T')[0] : '' %>">
+    </div>
+
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="found" <%=item.status==='found' ? 'selected' : '' %>>Found</option>
+            <option value="lost" <%=item.status==='lost' ? 'selected' : '' %>>Lost</option>
+            <option value="resolved" <%=item.status==='resolved' ? 'selected' : '' %>>Resolved</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Item</button>
+    <a href="/items" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,28 @@
+<h1>File a Claim</h1>
+
+<form method="POST" action="/claims/add">
+    <div class="form-group">
+        <label for="item_id">Select Item *</label>
+        <select id="item_id" name="item_id" required>
+            <option value="">— Choose an item —</option>
+            <% items.forEach(item=> { %>
+                <option value="<%= item.id %>" <%=selectedItemId && selectedItemId==item.id ? 'selected' : '' %>>
+                    #<%= item.id %> — <%= item.name %>
+                </option>
+                <% }) %>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="claimant_name">Your Name *</label>
+        <input type="text" id="claimant_name" name="claimant_name" required placeholder="e.g. John Doe">
+    </div>
+
+    <div class="form-group">
+        <label for="contact_info">Contact Info</label>
+        <input type="text" id="contact_info" name="contact_info" placeholder="e.g. email or phone">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Claim</button>
+    <a href="/claims" class="btn btn-secondary">Cancel</a>
+</form>

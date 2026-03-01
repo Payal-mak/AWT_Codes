@@ -1,0 +1,51 @@
+<h1>All Items</h1>
+
+<div class="action-bar">
+    <a href="/items/add" class="btn btn-primary">+ Add Item</a>
+</div>
+
+<% if (items.length===0) { %>
+    <p class="text-muted">No items found. Add one to get started.</p>
+    <% } else { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Date Found</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% items.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.id %>
+                        </td>
+                        <td>
+                            <%= item.name %>
+                        </td>
+                        <td>
+                            <%= item.location_found || '—' %>
+                        </td>
+                        <td>
+                            <%= item.date_found ? new Date(item.date_found).toLocaleDateString() : '—' %>
+                        </td>
+                        <td><span class="badge badge-<%= item.status %>">
+                                <%= item.status %>
+                            </span></td>
+                        <td>
+                            <a href="/items/<%= item.id %>" class="btn btn-secondary btn-sm">View</a>
+                            <a href="/items/edit/<%= item.id %>" class="btn btn-secondary btn-sm">Edit</a>
+                            <form class="inline" method="POST" action="/items/delete/<%= item.id %>"
+                                onsubmit="return confirm('Delete this item?')">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+        <% } %>
