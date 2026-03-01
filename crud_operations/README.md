@@ -41,70 +41,7 @@ A simple web application built with **Node.js**, **Express**, and **MySQL** to m
 
 ---
 
-## Project Structure
-
-```
-crud_operations/
-├── app.js                  # Express application entry point
-├── .env                    # Environment variables (DB credentials)
-├── .env.example            # Environment template
-├── package.json
-│
-├── config/
-│   └── db.js               # MySQL connection pool
-│
-├── database/
-│   └── schema.sql          # SQL schema (run to create tables)
-│
-├── models/
-│   ├── Item.js             # Item model (CRUD queries)
-│   └── Claim.js            # Claim model (CRUD + transaction)
-│
-├── controllers/
-│   ├── itemController.js   # Item request handlers
-│   └── claimController.js  # Claim request handlers
-│
-├── routes/
-│   ├── itemRoutes.js       # Item route definitions
-│   └── claimRoutes.js      # Claim route definitions
-│
-├── middlewares/
-│   └── errorHandler.js     # Global error handler
-│
-└── views/
-    ├── layout.ejs           # Shared HTML layout + CSS
-    ├── error.ejs            # Error page
-    ├── items/
-    │   ├── index.ejs        # Items list
-    │   ├── add.ejs          # Add item form
-    │   ├── edit.ejs         # Edit item form
-    │   └── show.ejs         # Item detail + claims
-    └── claims/
-        ├── index.ejs        # Claims list
-        ├── add.ejs          # File a claim form
-        └── edit.ejs         # Edit claim form
-```
-
----
-
-## How to Run
-
-### Prerequisites
-
-- **Node.js** (v14 or higher)
-- **MySQL** server running
-
-### 1. Set Up the Database
-
-Open MySQL and run the schema file:
-
-```sql
-source database/schema.sql;
-```
-
-Or copy-paste the contents of `database/schema.sql` into your MySQL client.
-
-### 2. Configure Environment
+### Configure Environment
 
 Copy `.env.example` to `.env` and fill in your MySQL credentials:
 
@@ -122,13 +59,13 @@ DB_NAME=lost_and_found
 PORT=3000
 ```
 
-### 3. Install Dependencies
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 4. Start the Application
+### Start the Application
 
 ```bash
 npm start
