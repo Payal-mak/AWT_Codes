@@ -1,28 +1,116 @@
 <h1>File a Claim</h1>
 
-<form method="POST" action="/claims/add">
-    <div class="form-group">
-        <label for="item_id">Select Item *</label>
-        <select id="item_id" name="item_id" required>
-            <option value="">— Choose an item —</option>
-            <% items.forEach(item=> { %>
-                <option value="<%= item.id %>" <%=selectedItemId && selectedItemId==item.id ? 'selected' : '' %>>
-                    #<%= item.id %> — <%= item.name %>
-                </option>
-                <% }) %>
-        </select>
-    </div>
+<%# ── Server-side validation error banner ── %>
+    <% if (typeof errors !=='undefined' && errors.length> 0) { %>
+        <div class="alert-error">
+            <strong>Please fix the following errors:</strong>
+            <ul>
+                <% errors.forEach(e=> { %><li>
+                        <%= e.msg %>
+                    </li>
+                    <% }); %>
+            </ul>
+        </div>
+        <% } %>
 
-    <div class="form-group">
-        <label for="claimant_name">Your Name *</label>
-        <input type="text" id="claimant_name" name="claimant_name" required placeholder="e.g. John Doe">
-    </div>
+            <form id="addClaimForm" method="POST" action="/claims/add" novalidate>
+                <% const fd=(typeof formData !=='undefined' ) ? formData : {}; const selId=(typeof selectedItemId
+                    !=='undefined' ) ? selectedItemId : null; const fieldErr=(typeof errors !=='undefined' ) ?
+                    Object.fromEntries(errors.map(e=> [e.field, e.msg]))
+                    : {};
+                    %>
 
-    <div class="form-group">
-        <label for="contact_info">Contact Info</label>
-        <input type="text" id="contact_info" name="contact_info" placeholder="e.g. email or phone">
-    </div>
+                    <div class="form-group <%= fieldErr.item_id ? 'field-error' : '' %>">
+                        <label for="item_id">Select Item *</label>
+                        <select id="item_id" name="item_id">
+                            <option value="">— Choose an item —</option>
+                            <% items.forEach(item=> { %>
+                                <option value="<%= item.id %>" <%=((fd.item_id && fd.item_id==item.id) || (selId &&
+                                    selId==item.id)) ? 'selected' : '' %>>
+                                    #<%= item.id %> — <%= item.name %>
+                                </option>
+                                <% }); %>
+                        </select>
+                        <% if (fieldErr.item_id) { %>
+                            <span class="field-error-msg">
+                                <%= fieldErr.item_id %>
+                            </span>
+                            <% } %>
+                    </div>
 
-    <button type="submit" class="btn btn-primary">Submit Claim</button>
-    <a href="/claims" class="btn btn-secondary">Cancel</a>
-</form>
+                    <div class="form-group <%= fieldErr.claimant_name ? 'field-error' : '' %>">
+                        <label for="claimant_name">Your Name *</label>
+                        <input type="text" id="claimant_name" name="claimant_name" placeholder="e.g. John Doe"
+                            value="<%= fd.claimant_name || '' %>">
+                        <% if (fieldErr.claimant_name) { %>
+                            <span class="field-error-msg">
+                                <%= fieldErr.claimant_name %>
+                            </span>
+                            <% } %>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_info">Contact Info</label>
+                        <input type="text" id="contact_info" name="contact_info" placeholder="e.g. email or phone"
+                            value="<%= fd.contact_info || '' %>">
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn btn-primary">Submit Claim</button>
+                    <a href="/claims" class="btn btn-secondary">Cancel</a>
+            </form>
+
+            <script>
+                (function () {
+                    const form = document.getElementById('addClaimForm');
+                    const itemEl = document.getElementById('item_id');
+                    const nameEl = document.getElementById('claimant_name');
+                    const btn = document.getElementById('submitBtn');
+
+                    function showInlineError(inputEl, msg) {
+                        inputEl.closest('.form-group').classList.add('field-error');
+                        let span = inputEl.closest('.form-group').querySelector('.field-error-msg');
+                        if (!span) {
+                            span = document.createElement('span');
+                            span.className = 'field-error-msg';
+                            inputEl.after(span);
+                        }
+                        span.textContent = msg;
+                    }
+
+                    function clearInlineError(inputEl) {
+                        inputEl.closest('.form-group').classList.remove('field-error');
+                        const span = inputEl.closest('.form-group').querySelector('.field-error-msg');
+                        if (span) span.remove();
+                    }
+
+                    itemEl.addEventListener('change', () => clearInlineError(itemEl));
+                    nameEl.addEventListener('input', () => clearInlineError(nameEl));
+
+                    form.addEventListener('submit', function (e) {
+                        let valid = true;
+
+                        if (!itemEl.value) {
+                            e.preventDefault();
+                            showInlineError(itemEl, 'Please select an item.');
+                            valid = false;
+                        }
+
+                        if (!nameEl.value.trim()) {
+                            e.preventDefault();
+                            showInlineError(nameEl, 'Claimant name is required.');
+                            if (valid) nameEl.focus();
+                            valid = false;
+                        } else if (nameEl.value.trim().length > 100) {
+                            e.preventDefault();
+                            showInlineError(nameEl, 'Claimant name must be 100 characters or fewer.');
+                            if (valid) nameEl.focus();
+                            valid = false;
+                        }
+
+                        if (valid) {
+                            btn.classList.add('btn-loading');
+                            btn.textContent = 'Submitting';
+                        }
+                    });
+                })();
+            </script>
