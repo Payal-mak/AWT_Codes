@@ -1,5 +1,6 @@
 const Item = require('../models/Item');
 const Claim = require('../models/Claim');
+const AppError = require('../middlewares/AppError');
 
 const itemController = {
     // List all items
@@ -14,7 +15,11 @@ const itemController = {
 
     // Show add item form
     showAddForm(req, res) {
-        res.render('items/add', { title: 'Add Item' });
+        res.render('items/add', {
+            title: 'Add Item',
+            errors: [],
+            formData: {}
+        });
     },
 
     // Create a new item
@@ -23,7 +28,9 @@ const itemController = {
             await Item.create(req.body);
             res.redirect('/items');
         } catch (err) {
-            next(err);
+            // If validation middleware already caught this, pass it through
+            if (err instanceof AppError) return next(err);
+            next(new AppError(err.message, 500));
         }
     },
 
@@ -32,9 +39,14 @@ const itemController = {
         try {
             const item = await Item.getById(req.params.id);
             if (!item) {
-                return res.status(404).render('error', { title: 'Not Found', message: 'Item not found' });
+                return next(new AppError('Item not found', 404));
             }
-            res.render('items/edit', { title: 'Edit Item', item });
+            res.render('items/edit', {
+                title: 'Edit Item',
+                item,
+                errors: [],
+                formData: item
+            });
         } catch (err) {
             next(err);
         }
@@ -43,10 +55,14 @@ const itemController = {
     // Update an item
     async updateItem(req, res, next) {
         try {
-            await Item.update(req.params.id, req.body);
+            const affected = await Item.update(req.params.id, req.body);
+            if (!affected) {
+                return next(new AppError('Item not found or nothing changed', 404));
+            }
             res.redirect('/items');
         } catch (err) {
-            next(err);
+            if (err instanceof AppError) return next(err);
+            next(new AppError(err.message, 500));
         }
     },
 
@@ -65,7 +81,7 @@ const itemController = {
         try {
             const item = await Item.getById(req.params.id);
             if (!item) {
-                return res.status(404).render('error', { title: 'Not Found', message: 'Item not found' });
+                return next(new AppError('Item not found', 404));
             }
             const claims = await Claim.getByItemId(req.params.id);
             res.render('items/show', { title: item.name, item, claims });
