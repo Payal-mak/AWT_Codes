@@ -1,5 +1,6 @@
 const Claim = require('../models/Claim');
 const Item = require('../models/Item');
+const AppError = require('../middlewares/AppError');
 
 const claimController = {
     // List all claims (with joined item info)
@@ -17,7 +18,13 @@ const claimController = {
         try {
             const items = await Item.getAll();
             const selectedItemId = req.query.item_id || null;
-            res.render('claims/add', { title: 'File a Claim', items, selectedItemId });
+            res.render('claims/add', {
+                title: 'File a Claim',
+                items,
+                selectedItemId,
+                errors: [],
+                formData: {}
+            });
         } catch (err) {
             next(err);
         }
@@ -29,7 +36,8 @@ const claimController = {
             await Claim.create(req.body);
             res.redirect('/claims');
         } catch (err) {
-            next(err);
+            if (err instanceof AppError) return next(err);
+            next(new AppError(err.message, 500));
         }
     },
 
@@ -38,10 +46,16 @@ const claimController = {
         try {
             const claim = await Claim.getById(req.params.id);
             if (!claim) {
-                return res.status(404).render('error', { title: 'Not Found', message: 'Claim not found' });
+                return next(new AppError('Claim not found', 404));
             }
             const items = await Item.getAll();
-            res.render('claims/edit', { title: 'Edit Claim', claim, items });
+            res.render('claims/edit', {
+                title: 'Edit Claim',
+                claim,
+                items,
+                errors: [],
+                formData: claim
+            });
         } catch (err) {
             next(err);
         }
@@ -50,10 +64,14 @@ const claimController = {
     // Update a claim
     async updateClaim(req, res, next) {
         try {
-            await Claim.update(req.params.id, req.body);
+            const affected = await Claim.update(req.params.id, req.body);
+            if (!affected) {
+                return next(new AppError('Claim not found or nothing changed', 404));
+            }
             res.redirect('/claims');
         } catch (err) {
-            next(err);
+            if (err instanceof AppError) return next(err);
+            next(new AppError(err.message, 500));
         }
     },
 
@@ -73,7 +91,11 @@ const claimController = {
             await Claim.approve(req.params.id);
             res.redirect('/claims');
         } catch (err) {
-            next(err);
+            // Claim.approve throws 'Claim not found' — wrap it with the right status
+            if (err.message === 'Claim not found') {
+                return next(new AppError('Claim not found', 404));
+            }
+            next(new AppError(err.message, 500));
         }
     }
 };
