@@ -1,36 +1,114 @@
 <h1>Edit Item</h1>
 
-<form method="POST" action="/items/edit/<%= item.id %>">
-    <div class="form-group">
-        <label for="name">Item Name *</label>
-        <input type="text" id="name" name="name" required value="<%= item.name %>">
-    </div>
+<%# ── Server-side validation error banner ── %>
+    <% if (typeof errors !=='undefined' && errors.length> 0) { %>
+        <div class="alert-error">
+            <strong>Please fix the following errors:</strong>
+            <ul>
+                <% errors.forEach(e=> { %><li>
+                        <%= e.msg %>
+                    </li>
+                    <% }); %>
+            </ul>
+        </div>
+        <% } %>
 
-    <div class="form-group">
-        <label for="description">Description</label>
-        <textarea id="description" name="description"><%= item.description || '' %></textarea>
-    </div>
+            <form id="editItemForm" method="POST" action="/items/edit/<%= item.id %>" novalidate>
+                <% const fd=(typeof formData !=='undefined' ) ? formData : item; const fieldErr=(typeof errors
+                    !=='undefined' ) ? Object.fromEntries(errors.map(e=> [e.field, e.msg]))
+                    : {};
+                    %>
 
-    <div class="form-group">
-        <label for="location_found">Location Found</label>
-        <input type="text" id="location_found" name="location_found" value="<%= item.location_found || '' %>">
-    </div>
+                    <div class="form-group <%= fieldErr.name ? 'field-error' : '' %>">
+                        <label for="name">Item Name *</label>
+                        <input type="text" id="name" name="name" value="<%= fd.name || '' %>">
+                        <% if (fieldErr.name) { %>
+                            <span class="field-error-msg">
+                                <%= fieldErr.name %>
+                            </span>
+                            <% } %>
+                    </div>
 
-    <div class="form-group">
-        <label for="date_found">Date Found</label>
-        <input type="date" id="date_found" name="date_found"
-            value="<%= item.date_found ? new Date(item.date_found).toISOString().split('T')[0] : '' %>">
-    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description"><%= fd.description || '' %></textarea>
+                    </div>
 
-    <div class="form-group">
-        <label for="status">Status</label>
-        <select id="status" name="status">
-            <option value="found" <%=item.status==='found' ? 'selected' : '' %>>Found</option>
-            <option value="lost" <%=item.status==='lost' ? 'selected' : '' %>>Lost</option>
-            <option value="resolved" <%=item.status==='resolved' ? 'selected' : '' %>>Resolved</option>
-        </select>
-    </div>
+                    <div class="form-group">
+                        <label for="location_found">Location Found</label>
+                        <input type="text" id="location_found" name="location_found"
+                            value="<%= fd.location_found || '' %>">
+                    </div>
 
-    <button type="submit" class="btn btn-primary">Update Item</button>
-    <a href="/items" class="btn btn-secondary">Cancel</a>
-</form>
+                    <div class="form-group">
+                        <label for="date_found">Date Found</label>
+                        <input type="date" id="date_found" name="date_found"
+                            value="<%= fd.date_found ? new Date(fd.date_found).toISOString().split('T')[0] : '' %>">
+                    </div>
+
+                    <div class="form-group <%= fieldErr.status ? 'field-error' : '' %>">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="found" <%=(fd.status||'')==='found' ? 'selected' : '' %>>Found</option>
+                            <option value="lost" <%=(fd.status||'')==='lost' ? 'selected' : '' %>>Lost</option>
+                            <option value="resolved" <%=(fd.status||'')==='resolved' ? 'selected' : '' %>>Resolved
+                            </option>
+                        </select>
+                        <% if (fieldErr.status) { %>
+                            <span class="field-error-msg">
+                                <%= fieldErr.status %>
+                            </span>
+                            <% } %>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn btn-primary">Update Item</button>
+                    <a href="/items" class="btn btn-secondary">Cancel</a>
+            </form>
+
+            <script>
+                (function () {
+                    const form = document.getElementById('editItemForm');
+                    const nameEl = document.getElementById('name');
+                    const btn = document.getElementById('submitBtn');
+
+                    function showInlineError(inputEl, msg) {
+                        inputEl.closest('.form-group').classList.add('field-error');
+                        let span = inputEl.closest('.form-group').querySelector('.field-error-msg');
+                        if (!span) {
+                            span = document.createElement('span');
+                            span.className = 'field-error-msg';
+                            inputEl.after(span);
+                        }
+                        span.textContent = msg;
+                    }
+
+                    function clearInlineError(inputEl) {
+                        inputEl.closest('.form-group').classList.remove('field-error');
+                        const span = inputEl.closest('.form-group').querySelector('.field-error-msg');
+                        if (span) span.remove();
+                    }
+
+                    nameEl.addEventListener('input', () => clearInlineError(nameEl));
+
+                    form.addEventListener('submit', function (e) {
+                        let valid = true;
+
+                        if (!nameEl.value.trim()) {
+                            e.preventDefault();
+                            showInlineError(nameEl, 'Item name is required.');
+                            nameEl.focus();
+                            valid = false;
+                        } else if (nameEl.value.trim().length > 100) {
+                            e.preventDefault();
+                            showInlineError(nameEl, 'Item name must be 100 characters or fewer.');
+                            nameEl.focus();
+                            valid = false;
+                        }
+
+                        if (valid) {
+                            btn.classList.add('btn-loading');
+                            btn.textContent = 'Saving';
+                        }
+                    });
+                })();
+            </script>
