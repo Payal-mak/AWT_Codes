@@ -6,42 +6,57 @@ const path = require('path');
 const itemRoutes = require('./routes/itemRoutes');
 const claimRoutes = require('./routes/claimRoutes');
 const errorHandler = require('./middlewares/errorHandler');
+const AppError = require('./middlewares/AppError');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// View engine setup
+// ─── Process-level error guards ──────────────────────────────────────────────
+
+process.on('uncaughtException', (err) => {
+    console.error(`[${new Date().toISOString()}] UNCAUGHT EXCEPTION — shutting down`);
+    console.error(err.name, err.message);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+    console.error(`[${new Date().toISOString()}] UNHANDLED REJECTION — shutting down`);
+    console.error(reason);
+    process.exit(1);
+});
+
+// ─── View engine setup ───────────────────────────────────────────────────────
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Body parser middleware
+// ─── Body parser middleware ──────────────────────────────────────────────────
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Simple layout middleware (manual approach without express-ejs-layouts)
-// We'll use a custom render wrapper
+// ─── Layout wrapper (manual, no extra package) ───────────────────────────────
+
 const originalRender = express.response.render;
 express.response.render = function (view, options, callback) {
     const res = this;
     const req = this.req;
 
-    // Render the view content first
-    const app = req.app;
-    app.render(view, options, (err, html) => {
+    const appInstance = req.app;
+    appInstance.render(view, options, (err, html) => {
         if (err) {
             if (callback) return callback(err);
             return res.status(500).send('Render error');
         }
 
-        // If it's the error page or layout itself, don't wrap
+        // Don't wrap the layout or error page in itself
         if (view === 'layout') {
             if (callback) return callback(null, html);
             return res.send(html);
         }
 
-        // Wrap in layout
         const layoutOptions = { ...options, body: html };
-        app.render('layout', layoutOptions, (err2, fullHtml) => {
+        appInstance.render('layout', layoutOptions, (err2, fullHtml) => {
             if (err2) {
                 if (callback) return callback(err2);
                 return res.status(500).send('Layout render error');
@@ -52,7 +67,8 @@ express.response.render = function (view, options, callback) {
     });
 };
 
-// Routes
+// ─── Routes ──────────────────────────────────────────────────────────────────
+
 app.get('/', (req, res) => {
     res.redirect('/items');
 });
@@ -60,17 +76,20 @@ app.get('/', (req, res) => {
 app.use('/items', itemRoutes);
 app.use('/claims', claimRoutes);
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).render('error', { title: 'Not Found', message: 'Page not found' });
+// ─── 404 handler ─────────────────────────────────────────────────────────────
+
+app.use((req, res, next) => {
+    next(new AppError(`Cannot ${req.method} ${req.originalUrl} — page not found`, 404));
 });
 
-// Error handler middleware
+// ─── Centralized error handler ───────────────────────────────────────────────
+
 app.use(errorHandler);
 
-// Start server
+// ─── Start server ────────────────────────────────────────────────────────────
+
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`[${new Date().toISOString()}] Server running on http://localhost:${PORT}`);
 });
 
 module.exports = app;
