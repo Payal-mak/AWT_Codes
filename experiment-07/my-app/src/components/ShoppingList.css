@@ -1,0 +1,55 @@
+.filters button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  background: #324a5f;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.filters button:hover {
+  transform: translateY(-1px);
+  background: #243746;
+}
+
+.filters button.active {
+  background: #1f7a8c;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+  height: 170px;
+  object-fit: cover;
+}
+
+.card button {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: none;
+  background: #1f7a8c;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background: #145664;
+}
