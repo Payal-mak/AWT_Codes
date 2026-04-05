@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-
+//add one to one chat in current chat application
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {
