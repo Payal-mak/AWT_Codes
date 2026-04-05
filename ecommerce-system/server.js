@@ -33,10 +33,10 @@ app.locals.orders = loadJSON(config.ORDERS_FILE);
 app.locals.carts = loadJSON(config.CARTS_FILE);
 
 //mount routers
-app.use('/api/auth', require('./routes/authRouter'));
+// app.use('/api/auth', require('./routes/authRouter'));
 app.use('/api/products', require('./routes/productsRouter'));
-app.use('/api/orders', require('./routes/ordersRouter'));
-app.use('/api/carts', require('./routes/cartsRouter'));
+// app.use('/api/orders', require('./routes/ordersRouter'));
+// app.use('/api/carts', require('./routes/cartsRouter'));
 
 //404 error handler
 app.use((req, res) => {
@@ -44,9 +44,11 @@ app.use((req, res) => {
 });
 
 //global error handler
-app.use(require('./middleware/errorHandler'));
+const { globalLimiter } = require('./middleware/rateLimiter');
+
+app.use(globalLimiter);
 
 //start server
 app.listen(config.PORT, () => {
-  console.log(`Server running on port ${config.PORT}`);
+  console.log(`Server running on port http://localhost:${config.PORT}`);
 });
