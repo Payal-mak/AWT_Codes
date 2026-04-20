@@ -24,9 +24,11 @@ app.get('/health', (req, res) => {
 // Import and use routes here 
 const authRoutes = require('./presentation/routes/auth.routes');
 const bookRoutes = require('./presentation/routes/book.routes');
+const userRoutes = require('./presentation/routes/user.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
+app.use('/api/users', userRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
