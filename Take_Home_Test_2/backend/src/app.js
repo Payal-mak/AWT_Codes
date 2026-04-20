@@ -25,10 +25,12 @@ app.get('/health', (req, res) => {
 const authRoutes = require('./presentation/routes/auth.routes');
 const bookRoutes = require('./presentation/routes/book.routes');
 const userRoutes = require('./presentation/routes/user.routes');
+const transactionRoutes = require('./presentation/routes/transaction.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
