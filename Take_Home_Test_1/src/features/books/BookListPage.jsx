@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBooks } from './useBooks';
 import BookFormModal from './BookFormModal';
@@ -158,6 +159,31 @@ export default function BookListPage() {
             </div>
             <span className="text-base font-bold text-gray-900">LibraryMS</span>
           </div>
+
+          {/* Role-based nav links */}
+          <nav className="hidden sm:flex items-center gap-1">
+            <Link to="/books"
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 transition-colors">
+              Books
+            </Link>
+            {isLibrarian ? (
+              <>
+                <Link to="/librarian/users" id="nav-users"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                  Users
+                </Link>
+                <Link to="/reports" id="nav-reports"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                  Reports
+                </Link>
+              </>
+            ) : (
+              <Link to="/dashboard" id="nav-dashboard"
+                className="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                My Dashboard
+              </Link>
+            )}
+          </nav>
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex flex-col items-end">
