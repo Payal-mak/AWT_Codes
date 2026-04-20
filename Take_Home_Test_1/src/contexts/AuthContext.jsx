@@ -6,6 +6,7 @@ const AuthContext = createContext(null);
 /**
  * AuthProvider — wraps the application and provides auth state + actions
  * to all descendants via useAuth() hook.
+ * Stores { token, role, user } in localStorage for persistence across refreshes.
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -16,8 +17,13 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
+  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  /** role derived from user object — 'student' | 'librarian' | null */
+  const role = user?.role ?? null;
 
   const login = useCallback(async (credentials) => {
     setLoading(true);
@@ -26,6 +32,25 @@ export function AuthProvider({ children }) {
       const data = await authService.login(credentials);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      setToken(data.token);
+      setUser(data.user);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const register = useCallback(async (userData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.register(userData);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setToken(data.token);
       setUser(data.user);
       return data;
     } catch (err) {
@@ -42,11 +67,27 @@ export function AuthProvider({ children }) {
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      setToken(null);
       setUser(null);
     }
   }, []);
 
-  const value = { user, loading, error, login, logout, isAuthenticated: !!user };
+  const clearError = useCallback(() => setError(null), []);
+
+  const value = {
+    user,
+    token,
+    role,
+    loading,
+    error,
+    login,
+    register,
+    logout,
+    clearError,
+    isAuthenticated: !!user,
+    isLibrarian: role === 'librarian',
+    isStudent: role === 'student',
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
