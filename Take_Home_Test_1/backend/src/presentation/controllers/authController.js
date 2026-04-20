@@ -8,6 +8,7 @@ const register = async (req, res) => {
     logger.info(`User registered: ${user.email}`);
     res.status(201).json({ message: 'Registration successful' });
   } catch (err) {
+    logger.error(`Registration error: ${err.message}`);
     res.status(400).json({ error: err.message });
   }
 };
@@ -19,6 +20,7 @@ const login = async (req, res) => {
     logger.info(`User logged in: ${email}`);
     res.json(result);
   } catch (err) {
+    logger.error(`Login error: ${err.message}`);
     res.status(400).json({ error: err.message });
   }
 };

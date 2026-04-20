@@ -1,12 +1,13 @@
 const { transactions } = require('../../infrastructure/repositories');
 
-const getOverdueBooks = () => {
+const getOverdueBooks = async () => {
+  const allTransactions = await transactions.findAll();
   const currentDate = new Date();
-  return transactions.filter(t => t.status === 'issued' && new Date(t.dueDate) < currentDate);
+  return allTransactions.filter(t => t.status === 'issued' && new Date(t.dueDate) < currentDate);
 };
 
-const getTransactionHistory = () => {
-  return transactions;
+const getTransactionHistory = async () => {
+  return await transactions.findAll();
 };
 
 module.exports = { getOverdueBooks, getTransactionHistory };
