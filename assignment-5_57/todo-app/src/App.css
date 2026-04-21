@@ -1,0 +1,309 @@
+/* App.css */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* A beautiful, modern gradient background */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+  color: #1a1a1a;
+}
+
+.app-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px; /* 16px padding ensures it never touches the screen edges */
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.todo-box {
+  width: 100%;
+  max-width: 550px;
+  /* Glassmorphism effect */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 30px 20px; /* Smaller side padding on mobile */
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Larger padding for tablets and desktops */
+@media (min-width: 500px) {
+  .todo-box {
+    padding: 40px;
+  }
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 16px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: #111827;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.task-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #764ba2;
+  background: #f3e8ff;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+/* Inputs & Buttons */
+.input-group {
+  display: flex;
+  flex-direction: column; /* Stack on mobile by default */
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* Side-by-side on slightly larger screens */
+@media (min-width: 450px) {
+  .input-group {
+    flex-direction: row;
+  }
+}
+
+.todo-input {
+  flex: 1;
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+.todo-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%; /* Full width on mobile stacked view */
+  text-align: center;
+}
+
+@media (min-width: 450px) {
+  .btn {
+    width: auto; /* Shrink back to normal on desktop */
+  }
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 15px rgba(118, 75, 162, 0.4);
+  transform: translateY(-1px);
+}
+
+/* List Items */
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.todo-item {
+  margin-bottom: 12px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  border: 1px solid #f3f4f6;
+  background: #ffffff;
+}
+
+.todo-item:hover {
+  border-color: #e5e7eb;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  transform: translateX(2px);
+}
+
+/* View Mode Details */
+.view-mode {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.checkbox-container input {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  accent-color: #764ba2;
+  margin: 0;
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #374151;
+  word-wrap: break-word; /* Prevents long words from blowing out the layout */
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+/* Action Buttons (Edit / Delete) */
+.item-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 1; /* Always visible on mobile */
+  flex-shrink: 0;
+}
+
+@media (min-width: 600px) {
+  .item-actions {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .todo-item:hover .item-actions {
+    opacity: 1;
+  }
+}
+
+.action-btn {
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  color: #9ca3af;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.edit-btn:hover { color: #667eea; border-color: #c7d2fe; background: #e0e7ff; }
+.delete-btn:hover { color: #ef4444; border-color: #fecaca; background: #fee2e2; }
+
+/* Edit Mode Details */
+.edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background-color: #f9fafb;
+  border-radius: 10px;
+}
+
+@media (min-width: 450px) {
+  .edit-mode {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.edit-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 450px) {
+  .edit-actions {
+    width: auto;
+  }
+}
+
+.btn-sm {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  flex: 1;
+}
+
+.btn-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #059669;
+}
+
+.btn-ghost {
+  background-color: white;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.btn-ghost:hover {
+  background-color: #f3f4f6;
+}
+
+/* Empty string styles */
+.empty-state {
+  text-align: center;
+  color: #9ca3af;
+  margin-top: 24px;
+  padding: 40px 20px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: rgba(249, 250, 251, 0.5);
+}
